@@ -1,0 +1,10 @@
+yfinance
+pandas
+pandas-ta
+plotly
+jinja2
+langgraph
+langchain-core
+langchain-community
+duckduckgo-search
+schedule
