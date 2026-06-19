@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ ticker }} Research Report - {{ run_date }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d0f12;
+            --card-bg: rgba(22, 28, 36, 0.95);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #e9ecef;
+            --text-secondary: #9ea9b3;
+            --primary: #3b82f6;
+            
+            --bullish: #10b981;
+            --bearish: #ef4444;
+            --neutral: #f59e0b;
+            
+            --bullish-bg: rgba(16, 185, 129, 0.12);
+            --bearish-bg: rgba(239, 68, 68, 0.12);
+            --neutral-bg: rgba(245, 158, 11, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Navigation Header */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        nav a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: opacity 0.2s;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        .logo-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Top Header Card */
+        .header-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        .header-left h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .price-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.75rem 1.25rem;
+            text-align: right;
+        }
+
+        .price-val {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .trend-badge {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.25rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .trend-Bullish { color: var(--bullish); background: var(--bullish-bg); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .trend-Bearish { color: var(--bearish); background: var(--bearish-bg); border: 1px solid rgba(239, 68, 68, 0.3); }
+        .trend-Neutral { color: var(--neutral); background: var(--neutral-bg); border: 1px solid rgba(245, 158, 11, 0.3); }
+
+        /* Grid Layout */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .metric-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metric-val {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        /* Chart Section */
+        .chart-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        /* Text Content Cards */
+        .report-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            border-left: 4px solid var(--primary);
+            padding-left: 0.75rem;
+        }
+
+        .highlights-list {
+            margin-left: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .highlights-list li {
+            margin-bottom: 0.75rem;
+        }
+
+        /* Revision History Loop Logs */
+        .timeline {
+            position: relative;
+            padding-left: 1.5rem;
+            border-left: 2px solid var(--border-color);
+            margin-top: 1.5rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -29px;
+            top: 4px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid var(--bg-color);
+        }
+
+        .timeline-item.rejected::before {
+            background: var(--bearish);
+        }
+
+        .timeline-item.approved-item::before {
+            background: var(--bullish);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .badge-rejected { color: var(--bearish); background: var(--bearish-bg); }
+        .badge-approved { color: var(--bullish); background: var(--bullish-bg); }
+
+        .timeline-critique {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            border-left: 3px solid var(--bearish);
+            color: var(--text-secondary);
+        }
+
+        .timeline-critique.critique-approved {
+            border-left: 3px solid var(--bullish);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav>
+            <a href="portfolio_report_{{ run_date }}.html">
+                &larr; Back to Portfolio Dashboard
+            </a>
+            <span class="logo-text">LocalAlpha AI</span>
+        </nav>
+
+        <!-- Header Card -->
+        <header class="header-card">
+            <div class="header-left">
+                <h1>{{ ticker }} Research</h1>
+                <p class="subtitle">Generated on {{ run_date }} | Model Engine: {{ provider }} ({{ model_name }})</p>
+            </div>
+            <div class="header-right">
+                <div class="price-badge">
+                    <div class="subtitle">Reference Price</div>
+                    <div class="price-val">${{ "%.2f"|format(close_price) }}</div>
+                </div>
+                <div class="trend-badge trend-{{ predicted_trend }}">
+                    {{ predicted_trend }}
+                </div>
+            </div>
+        </header>
+
+        <!-- Accuracy & Historical Metrics Grid -->
+        <section class="metrics-grid">
+            <div class="metric-card">
+                <span class="metric-label">Prediction Accuracy</span>
+                <span class="metric-val">
+                    {% if rolling_accuracy is not none %}
+                        {{ "%.1f"|format(rolling_accuracy * 100) }}% (5-Run Rolling Average)
+                    {% else %}
+                        N/A (First run / Insufficient data)
+                    {% endif %}
+                </span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Previous Prediction Context</span>
+                <span class="metric-val">
+                    {% if historical_context_data %}
+                        {{ historical_context_data.run_date }} &rarr; 
+                        <span class="trend-{{ historical_context_data.predicted_trend }}">{{ historical_context_data.predicted_trend }}</span>
+                    {% else %}
+                        No Previous Run Data
+                    {% endif %}
+                </span>
+            </div>
+            <div class="metric-card">
+                <span class="metric-label">Loop Refinements</span>
+                <span class="metric-val">
+                    {{ revision_count }} / 2 Correction Cycles
+                </span>
+            </div>
+        </section>
+
+        <!-- Subplot Chart -->
+        <section class="chart-container">
+            {{ chart_div | safe }}
+        </section>
+
+        <!-- Research Report Content -->
+        <main class="report-section">
+            <h2 class="section-title">AI Agent Executive Synthesis</h2>
+            <div>
+                {{ researcher_draft_html | safe }}
+            </div>
+        </main>
+
+        <!-- Reviewer Agentic Reflection Audit Log -->
+        <section class="report-section">
+            <h2 class="section-title">LangGraph Multi-Agent Audit Log (Short-Term Reflection)</h2>
+            <div class="timeline">
+                {% for log in revision_log %}
+                    <div class="timeline-item {% if log.approved %}approved-item{% else %}rejected{% endif %}">
+                        <div class="timeline-header">
+                            <span>Cycle {{ log.revision }}: Research Analysis Drafted</span>
+                            <span class="timeline-badge {% if log.approved %}badge-approved{% else %}badge-rejected{% endif %}">
+                                {% if log.approved %}APPROVED{% else %}REJECTED BY REVIEWER{% endif %}
+                            </span>
+                        </div>
+                        <p class="subtitle">Drafted Trend direction: <strong>{{ log.predicted_trend }}</strong></p>
+                        
+                        {% if not log.approved %}
+                            <div class="timeline-critique">
+                                <strong>Reviewer Audit Critique:</strong><br>
+                                {{ log.critique }}
+                            </div>
+                        {% else %}
+                            <div class="timeline-critique critique-approved">
+                                <strong>Reviewer Audit Notes:</strong> Audit Passed. Mathematical validation confirmed complete compliance with technical indicators.
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</body>
+</html>

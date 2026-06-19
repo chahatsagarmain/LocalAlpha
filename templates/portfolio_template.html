@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalAlpha - Portfolio Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d0f12;
+            --card-bg: rgba(22, 28, 36, 0.95);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #e9ecef;
+            --text-secondary: #9ea9b3;
+            --primary: #3b82f6;
+            
+            --bullish: #10b981;
+            --bearish: #ef4444;
+            --neutral: #f59e0b;
+            
+            --bullish-bg: rgba(16, 185, 129, 0.12);
+            --bearish-bg: rgba(239, 68, 68, 0.12);
+            --neutral-bg: rgba(245, 158, 11, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            margin-bottom: 2.5rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+        }
+
+        header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.75rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Dashboard layout splits into Sidebar and Grid */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Sidebar Commands Info */
+        .sidebar {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            height: fit-content;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .sidebar h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .cli-tip {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            font-family: monospace;
+            font-size: 0.85rem;
+            border-left: 3px solid var(--primary);
+            word-break: break-all;
+        }
+
+        .sidebar-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .sidebar-section p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Main Portfolio Grid */
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 1.5rem;
+            align-content: start;
+        }
+
+        .stock-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s;
+            box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.15);
+        }
+
+        .stock-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .ticker-symbol {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .price-badge {
+            font-family: monospace;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            flex-grow: 1;
+            margin-bottom: 1.5rem;
+        }
+
+        .trend-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .accuracy-badge {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .trend-pill {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .trend-Bullish { color: var(--bullish); background: var(--bullish-bg); }
+        .trend-Bearish { color: var(--bearish); background: var(--bearish-bg); }
+        .trend-Neutral { color: var(--neutral); background: var(--neutral-bg); }
+        .trend-N\/A { color: var(--text-secondary); background: rgba(255, 255, 255, 0.05); }
+
+        .highlights-preview {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 0.5rem;
+        }
+
+        .card-footer {
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .run-date {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .view-btn {
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: filter 0.2s;
+        }
+
+        .view-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .empty-portfolio {
+            grid-column: 1 / -1;
+            text-align: center;
+            background: var(--card-bg);
+            border: 1px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>LocalAlpha Dashboard</h1>
+            <p class="subtitle">Orchestrated Stock & Industry Research Portfolio Summary | {{ run_date }}</p>
+        </header>
+
+        <div class="dashboard-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <h2>CLI Commands Helper</h2>
+                
+                <div class="sidebar-section">
+                    <p>To add a stock to your portfolio:</p>
+                    <div class="cli-tip">python main.py --portfolio-add AAPL</div>
+                </div>
+
+                <div class="sidebar-section">
+                    <p>To remove a stock:</p>
+                    <div class="cli-tip">python main.py --portfolio-remove AAPL</div>
+                </div>
+
+                <div class="sidebar-section">
+                    <p>To list all portfolio stocks:</p>
+                    <div class="cli-tip">python main.py --portfolio-list</div>
+                </div>
+
+                <div class="sidebar-section">
+                    <p>To trigger research runs for the whole portfolio:</p>
+                    <div class="cli-tip">python main.py --portfolio-run</div>
+                </div>
+
+                <div class="sidebar-section">
+                    <p>To schedule daily runs (cron daemon):</p>
+                    <div class="cli-tip">python main.py --cron "0 17 * * *"</div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="portfolio-grid">
+                {% if stocks %}
+                    {% for stock in stocks %}
+                        <div class="stock-card">
+                            <div class="card-header">
+                                <span class="ticker-symbol">{{ stock.ticker }}</span>
+                                <span class="price-badge">
+                                    {% if stock.last_close_price > 0 %}
+                                        ${{ "%.2f"|format(stock.last_close_price) }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="card-body">
+                                <div class="trend-row">
+                                    <span class="trend-pill trend-{{ stock.predicted_trend }}">
+                                        {{ stock.predicted_trend }}
+                                    </span>
+                                    <span class="accuracy-badge">
+                                        {% if stock.rolling_accuracy is not none %}
+                                            Accuracy: {{ "%.0f"|format(stock.rolling_accuracy * 100) }}%
+                                        {% else %}
+                                            No accuracy data
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="highlights-preview">
+                                    {{ stock.highlights | replace("### Highlights", "") | replace("-", "") | trim }}
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <span class="run-date">Run: {{ stock.last_run_date }}</span>
+                                {% if stock.last_run_date != 'N/A' %}
+                                    <a href="{{ stock.ticker }}_report_{{ run_date }}.html" class="view-btn">View Analysis</a>
+                                {% else %}
+                                    <span class="view-btn" style="opacity:0.3; cursor:not-allowed;">No Report</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-portfolio">
+                        <h3>Your portfolio is currently empty.</h3>
+                        <p style="margin-top:0.5rem;">Use the CLI commands in the sidebar to add stocks to track.</p>
+                    </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+</body>
+</html>
